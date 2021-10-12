@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project name = "RCOP">
+    <Package name = "Modules">
+        <Key ID = "STR_RCOP_Modules_FOBMarker_tooltip">
+            <English>A single object that will act as the marker for player built FOBs. Example: Land_PortableCabinet_01_closed_black_F</English>
+        </Key>
+		<Key ID = "STR_RCOP_Modules_FOBObjects_tooltip">
+            <English>An array of objects that the FOB markers will save in a 100 metre radius. It must include the FOB marker itself. Example: ["Land_BagFence_01_round_green_F","Land_BagFence_01_long_green_F","Land_PortableCabinet_01_closed_black_F"]</English>
+        </Key>
+		<Key ID = "STR_RCOP_Modules_vehicleCratesToSave_tooltip">
+            <English>An array of which vehicle and crate inventories and locations to save. Note that any items inside of a backpack, vest or clothes inside of the inventory WILL NOT be saved. These objects should not be in the FOB Object list, they will be saved independently. Example: ["B_supplyCrate_F","B_Truck_01_box_F"]</English>
+        </Key>
+		<Key ID = "STR_RCOP_Modules_permittedMines_tooltip">
+            <English>An array of mines that will be saved anywhere on the map. They will be replaced and rearmed on load. Example: ["ATMine_Range_Ammo","APERSMine_Range_Ammo"]</English>
+        </Key>	
+		<Key ID = "STR_RCOP_Modules_deleteBlocker_tooltip">
+            <English>An object that will block other objects in a 100 metre radius around it from being deleted when you load the 3Den Editor Save. Use this to keep objects synced to the detection modules in the mission file. They will still be deleted when actually playing the mission as usual. Example: VR_3DSelector_01_default_F</English>
+        </Key>	
+		<Key ID = "STR_RCOP_Modules_OldSlot_tooltip">
+            <English>If a slot with a saved loadout in your current save is missing from the mission when it is saved (disconnected or player didn't show up), then PERSIST will attempt to keep the old loadout. Example: Rifleman in Mission 1 saves gear. Rifleman is gone in Mission 2. Rifleman in Mission 3 loads his gear from Mission 1.</English>
+        </Key>
+		<Key ID = "STR_RCOP_Modules_save_description">
+            <English>Sync objects to this to add an ACE interaction option to allow saving. All variables have defaults if left empty. Instead of using the action, you can also run "RCOP\RCOPersist\RCOPsaving.sqf" remoteExec ["execVM",0]; during the mission to save.</English>
+        </Key>
+		
+		<Key ID = "STR_RCOF_Modules_station_tooltip">
+            <English>An array of objects that will count as the station. Refilling Building Supplies and builders taking personal supplies is done here. They cannot build on their own, however. Can be left empty to assign nothing. Example: ["Land_CratesWooden_F"]</English>
+        </Key>
+		<Key ID = "STR_RCOF_Modules_VehicleBig_tooltip">
+            <English>An array of vehicles that will count as large Building Supplies carriers. Intended for trucks. Can be left empty to assign nothing. Example: ["B_Truck_01_box_F"]</English>
+        </Key>
+		<Key ID = "STR_RCOF_Modules_VehicleBigMax_tooltip">
+            <English>How many Building Supplies a large carrier can hold. If 0 will be reset to the default.</English>
+        </Key>
+		<Key ID = "STR_RCOF_Modules_VehicleSmall_tooltip">
+            <English>An array of vehicles that will count as small Building Supplies carriers. Intended for jeeps, MRAPs, etc. Can be left empty to assign nothing. Example: ["B_MRAP_01_F"]</English>
+        </Key>
+		<Key ID = "STR_RCOF_Modules_VehicleSmallMax_tooltip">
+            <English>How many Building Supplies a small carrier can hold. If 0 will be reset to the default.</English>
+        </Key>	
+		<Key ID = "STR_RCOF_Modules_ObjectBig_tooltip">
+            <English>An array of objects that will count as large Building Supplies holders. Intended for slingloaded crates. Can be left empty to assign nothing. Example: ["B_Slingload_01_Ammo_F"]</English>
+        </Key>
+		<Key ID = "STR_RCOF_Modules_ObjectBigMax_tooltip">
+            <English>How many Building Supplies a large holder can hold. If 0 will be reset to the default.</English>
+        </Key>
+		<Key ID = "STR_RCOF_Modules_ObjectSmall_tooltip">
+            <English>An array of objects that will count as small Building Supplies holders. Intended for slingloaded or loaded crates. Example: ["CargoNet_01_box_F"]</English>
+        </Key>
+		<Key ID = "STR_RCOF_Modules_ObjectSmallMax_tooltip">
+            <English>How many Building Supplies a small holder can hold. If 0 will be reset to the default.</English>
+        </Key>
+		<Key ID = "STR_RCOF_Modules_BuildRange_tooltip">
+            <English>The distance from a Building Supplies location that players can construct. If 0 will be reset to the default.</English>
+        </Key>
+		<Key ID = "STR_RCOF_Modules_FortifySide_tooltip">
+            <English>Which side gets the ability to Fortify?</English>
+        </Key>
+		<Key ID = "STR_RCOF_Modules_DesertArray_tooltip">
+            <English>An array of objects that can be built using the Fortify tool. Each object must be followed by a cost. Desert is the default list. Example: [["Land_BagFence_Long_F", 10],["Land_BagBunker_Small_F", 50],["Land_Plank_01_4m_F", 10],["Land_PortableCabinet_01_closed_black_F", 5]]</English>
+        </Key>
+		<Key ID = "STR_RCOF_Modules_WoodlandArray_tooltip">
+            <English>An array of objects that can be built using the Fortify tool. Each object must be followed by a cost. If left empty, the option to change to this list will not be present. Example: [["Land_BagFence_01_long_green_F", 10],["Land_BagBunker_01_small_green_F", 50],["Land_Plank_01_4m_F", 10],["Land_PortableCabinet_01_closed_black_F", 5]]</English>
+        </Key>
+		<Key ID = "STR_RCOF_Modules_LargeArray_tooltip">
+            <English>An array of objects that can be built using the Fortify tool. Each object must be followed by a cost. If left empty, the option to change to this list will not be present. Example: [["Land_Bunker_01_small_F", 500],["Land_Cargo_Tower_V3_F", 1000],["Land_PortableCabinet_01_closed_black_F", 5]]</English>
+        </Key>
+		<Key ID = "STR_RCOF_Modules_CampArray_tooltip">
+            <English>An array of objects that can be built using the Fortify tool. Each object must be followed by a cost. If left empty, the option to change to this list will not be present. Example: [["Land_TentA_F", 10],["Land_TentDome_F", 10],["Campfire_burning_F", 10],["Land_PortableCabinet_01_closed_black_F", 5]]</English>
+        </Key>
+		<Key ID = "STR_RCOF_Modules_Custom1Array_tooltip">
+            <English>An array of objects that can be built using the Fortify tool. Each object must be followed by a cost. If left empty, the option to change to this list will not be present.</English>
+        </Key>
+		<Key ID = "STR_RCOF_Modules_Custom2Array_tooltip">
+            <English>An array of objects that can be built using the Fortify tool. Each object must be followed by a cost. If left empty, the option to change to this list will not be present.</English>
+        </Key>
+		<Key ID = "STR_RCOF_Modules_AllowDelete_tooltip">
+            <English>Allow those with fortify tools to remove objects placed by the mission that are the same as the ones they can build. This means a FOB built in mission 1 can be removed in mission 2.</English>
+        </Key>
+		<Key ID = "STR_RCOP_Modules_LimitedFortify_description">
+            <English>IMPORTANT: This module requires the 'Save Action' module to be placed to function. The customisation options for Limited Fortify. The current list can be switched from any FOB Marker or Building Supply location. The change is global, and all players with fortify tools will get an update that the building list changed.</English>
+        </Key>
+		
+		<Key ID = "STR_RCOP_Modules_CrateAction_description">
+            <English>Sync objects to this to add an ACE interaction option to fill eligble crates and vehicles with their saved items, and set their correct fuel, damage and ammo stats. This is NOT the intentional way to produce the effect, and repeated use of this load command will allow duplication of items and wipe freshly placed items. This is primarily intended as a testing device. For the correct method, put ' "RCOP\RCOPersist\fn_RCOPcrateFiller.sqf" remoteExec ["execVM",0]; ' in your initServer.sqf. Alternatively there is a module which can do the same.</English>
+        </Key>
+		
+		<Key ID = "STR_RCOP_Modules_EasyDetailLoad_description">
+            <English>You need a player named 'persist1' for this system to work correctly. This should most likely be the mission maker, and that player must have the save file. This will automatically run the Detailed Loading script 5 seconds after mission start. This script will fill eligble crates and vehicles with their saved items, and set their correct fuel, damage and ammo stats. These vehicles need to be in the same location as they were at the end of the last mission. It's generally intended that this script is run in the mission, the correct method for that is to put ' [[1,1,2,0,0,0,false],"RCOP\RCOPersist\RCOPcrateFiller.sqf"] remoteExec ["execVM",0]; ' in your initServer.sqf. This module is an alternative.</English>
+        </Key>
+		<Key ID = "STR_RCOP_Modules_BudgetLoad_tooltip">
+            <English>If toggled on, the recorded Building Supplies budget in each saved supplier will be reloaded. For use with Limited Fortify.</English>
+        </Key>
+		<Key ID = "STR_RCOP_Modules_VehicleStats_tooltip">
+            <English>If toggled on, the recorded vehicle stats will be applied. Vehicles will maintain the same ammo, damage, fuel and so on between missions.</English>
+        </Key>
+		<Key ID = "STR_RCOP_Modules_PlayerLoadout_tooltip">
+            <English>There are two methods to load player information. The first and old version uses the profile of the player, whilst the second version is based on the slot taken in the operation instead. Every slot to be saved/loaded needs a variable named assigned, for example persist2, persist3, etc. This is the recommended system. By default, it will just load player gear, with other options listed below.</English>
+        </Key>
+		<Key ID = "STR_RCOP_Modules_LoadMedical_tooltip">
+            <English>If toggled on, the saved player data about their ACE Medical status will be loaded. CURRENTLY PLACEHOLDER: Next ACE update will contain the function needed to save/load medical data, when ACE updates this option will work.</English>
+        </Key>
+		<Key ID = "STR_RCOP_Modules_LoadHunger_tooltip">
+            <English>If toggled on, the saved player data about their ACEX hunger and thirst will be loaded.</English>
+        </Key>
+		<Key ID = "STR_RCOP_Modules_LoadMarker_tooltip">
+            <English>If toggled on, the saved map data will be loaded onto the player's map.</English>
+        </Key>
+		<Key ID = "STR_RCOP_Modules_JIPLoadout_tooltip">
+            <English>If toggled on, players joining the mission late will still attempt to load their saved loadout. Works for both Slot and Profile based loading.</English>
+        </Key>
+		
+		<Key ID = "STR_RCOF_Modules_Info_tooltip">
+            <English>The string to be added to the final scene.</English>
+        </Key>
+		<Key ID = "STR_RCOP_Modules_InfoToAdd_description">
+            <English>Add a string to the end of round information report, triggered from the same place save modules are. Intended for use with triggers to active the module as objectives are completed.</English>
+        </Key>
+		<Key ID = "STR_RCOP_Modules_DefineSavedFOBs_description">
+            <English>Sync objects to this module, then sync this module to the Save Action module. Any objects synced to this module will overwrite the Permitted FOB Objects setting for the Save Action module. Objects synced to this module will disappear on mission start.</English>
+        </Key>
+		<Key ID = "STR_RCOP_Modules_DefineSavedCrates_description">
+            <English>Sync vehicles, statics and crates to this module, then sync this module to the Save Action module. Anything synced to this module will overwrite the Vehicles and Crates to Save setting for the Save Action module. Anything synced to this module will disappear on mission start. Place the Delete Blocker object defined in the Save Action module among these vehicles and crates in order to stop them from being deleted when you load your save. This saves you the hassle of placing all the vehicles and crates back down again every time you load a save.</English>
+        </Key>
+		
+    </Package>
+</Project>

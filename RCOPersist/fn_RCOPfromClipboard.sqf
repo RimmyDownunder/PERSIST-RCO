@@ -1,0 +1,24 @@
+_clipboardSave = call (compile copyFromClipboard);
+
+profileNamespace setVariable ["rimmy_camp_var_FOBMarkerForDelete", _clipboardSave select 0];
+profileNamespace setVariable ["rimmy_camp_var_recBuilding", _clipboardSave select 1];
+profileNamespace setVariable ["rimmy_camp_var_recFOBAnchorLoc", _clipboardSave select 2];
+profileNamespace setVariable ["rimmy_camp_var_recMine", _clipboardSave select 3];
+profileNamespace setVariable ["rimmy_camp_var_recGroupLeaderSide", _clipboardSave select 4];
+profileNamespace setVariable ["rimmy_camp_var_recGroupLocation", _clipboardSave select 5];
+profileNamespace setVariable ["rimmy_camp_var_recGroupVehicle", _clipboardSave select 6];
+profileNamespace setVariable ["rimmy_camp_var_recGroupLeaderType", _clipboardSave select 7];
+profileNamespace setVariable ["rimmy_camp_var_recGroupCallsign", _clipboardSave select 8];
+profileNamespace setVariable ["rimmy_camp_var_recGroupNumbers", _clipboardSave select 9];
+profileNamespace setVariable ["rimmy_camp_var_recCrateCargo", _clipboardSave select 10]; 
+profileNamespace setVariable ["rimmy_camp_var_recCrateLocation", _clipboardSave select 11]; 
+profileNamespace setVariable ["rimmy_camp_var_recCrateBudget", _clipboardSave select 12]; 
+profileNamespace setVariable ["rimmy_camp_var_recCrateStats", _clipboardSave select 13]; 
+profileNamespace setVariable ["rimmy_camp_var_recFOBDeleteBlocker", _clipboardSave select 14];
+profileNamespace setVariable ["rimmy_camp_var_slotLoadout", _clipboardSave select 15]; 
+profileNamespace setVariable ["rimmy_camp_var_slotMedical", _clipboardSave select 16];
+profileNamespace setVariable ["rimmy_camp_var_slotHunger", _clipboardSave select 17];
+profileNamespace setVariable ["rimmy_camp_var_playerLoadout", _clipboardSave select 18]; 
+profileNamespace setVariable ["rimmy_camp_var_playerHunger", _clipboardSave select 19];
+profileNamespace setVariable ["rimmy_camp_var_playerMedical", _clipboardSave select 20];
+profileNamespace setVariable ["rimmy_camp_var_slotMarkers", _clipboardSave select 21];
