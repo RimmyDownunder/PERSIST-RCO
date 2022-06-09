@@ -12,23 +12,6 @@ class RCOP_EasyDetailLoad: Module_F
 
 	class Attributes: AttributesBase
 	{
-		class RCOP_BudgetLoad: CheckBox
-		{
-			property = "RCOP_BudgetLoad";
-			displayName="Load Budget";
-			tooltip=$STR_RCOP_Modules_BudgetLoad_tooltip;
-			typeName="BOOL";
-			defaultValue = "True";
-		};
-		
-		class RCOP_VehicleStats: CheckBox
-		{
-			property = "RCOP_VehicleStats";
-			displayName="Load Vehicle Stats";
-			tooltip=$STR_RCOP_Modules_VehicleStats_tooltip;
-			typeName="BOOL";
-			defaultValue = "True";
-		};
 		
 		class RCOP_PlayerLoadout: Combo
 		{
@@ -60,7 +43,7 @@ class RCOP_EasyDetailLoad: Module_F
 		class RCOP_LoadMedical: CheckBox
 		{
 			property = "RCOP_LoadMedical";
-			displayName="Load ACE Medical (PLACEHOLDER)";
+			displayName="Load ACE Medical";
 			tooltip=$STR_RCOP_Modules_LoadMedical_tooltip;
 			typeName="BOOL";
 			defaultValue = "False";

@@ -7,6 +7,7 @@ rimmy_camp_saveAction_unitSync = [];
 	rimmy_camp_saveAction_unitSync pushBack _x;
 	};
 } foreach (synchronizedObjects _module);
+
 _FOBMarker = _module getVariable "RCOP_FOBMarker";
 _FOBObjectsPREARRAY = _module getVariable "RCOP_FOBObjects";
 _cratesToSavePREARRAY = _module getVariable "RCOP_VehicleCratesToSave";
@@ -21,11 +22,11 @@ if (isnil "rimmy_camp_endOfRoundInfo") then {rimmy_camp_endOfRoundInfo = ["This 
 publicVariable "rimmy_camp_endOfRoundInfo";
 rimmy_camp_var_endOfRoundInfoStore = compile preprocessFile "RCOP\RCOPersist\fn_RCOPendOfRoundInfoStore.sqf";
 
-if !(_FOBObjectsPREARRAY isEqualTo "") then {_permittedObjects = ["Land_BagFence_Long_F","Land_BagBunker_Small_F","Land_Plank_01_4m_F","Land_PortableCabinet_01_closed_black_F"]} 
+if (_FOBObjectsPREARRAY isEqualTo "") then {_permittedObjects = ["Land_BagFence_Long_F","Land_BagBunker_Small_F","Land_Plank_01_4m_F","Land_PortableCabinet_01_closed_black_F"]} 
 else {_permittedObjects = parseSimpleArray _FOBObjectsPREARRAY;};
-if !(_cratesToSavePREARRAY isEqualTo "") then {_cratesToSave = ["B_supplyCrate_F","B_Truck_01_box_F"]} 
+if (_cratesToSavePREARRAY isEqualTo "") then {_cratesToSave = ["B_supplyCrate_F","B_Truck_01_box_F"]} 
 else {_cratesToSave = parseSimpleArray _cratesToSavePREARRAY;};
-if !(_permittedMinesPREARRAY isEqualTo "") then {_permittedMines = ["ATMine_Range_Ammo","APERSMine_Range_Ammo"]} 
+if (_permittedMinesPREARRAY isEqualTo "") then {_permittedMines = ["ATMine_Range_Ammo","APERSMine_Range_Ammo"]} 
 else {_permittedMines = parseSimpleArray _permittedMinesPREARRAY;};
 if (_FOBMarker == "") then {_FOBMarker = "Land_PortableCabinet_01_closed_black_F"}; 
 
@@ -72,13 +73,13 @@ publicVariable "rimmy_camp_var_fobDeleteBlocker";
 
 {
 RCOPsaveACEAction = ["RCOPsaveACEAction", "Save Mission with PERSIST", "", {
-"RCOP\RCOPersist\RCOPsaving.sqf" remoteExec ["execVM",0];
+[[_oldSlot],"RCOP\RCOPersist\RCOPsaving.sqf"] remoteExec ["execVM",0];
 }, {true}] call ace_interact_menu_fnc_createAction;
 
 {[_x, 0, ["ACE_MainActions"], RCOPsaveACEAction] call ace_interact_menu_fnc_addActionToObject;} forEach rimmy_camp_saveAction_unitSync;
 
 RCOPinfoACEAction = ["RCOPinfoACEAction", "Display End of Mission Info", "", {
-[[_oldSlot],"RCOP\RCOPersist\RCOPendOfRoundInfo.sqf"] remoteExec ["execVM",0];
+"RCOP\RCOPersist\RCOPendOfRoundInfo.sqf" remoteExec ["execVM",0];
 }, {true}] call ace_interact_menu_fnc_createAction;
 
 {[_x, 0, ["ACE_MainActions"], RCOPinfoACEAction] call ace_interact_menu_fnc_addActionToObject;} forEach rimmy_camp_saveAction_unitSync;

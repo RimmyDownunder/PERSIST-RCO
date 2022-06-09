@@ -6,6 +6,8 @@ _loadout = profileNamespace getVariable "rimmy_camp_var_playerLoadout";
 player setUnitLoadout _loadout;
 
 if (_medicalLoadChoice == 1) then {
+_medicalPass = profileNamespace getVariable "rimmy_camp_var_playerMedical";
+[{[(_this select 0),(_this select 1)] call ace_medical_fnc_deserializeState},[player,_medicalPass]] call CBA_fnc_directCall;
 };
 
 if (_hungerLoadChoice == 1) then {
@@ -33,6 +35,10 @@ player setUnitLoadout _loadout;
 };
 
 if (_medicalLoadChoice == 1) then {
+if ((vehicleVarName player) in _rimmySlotMedical) then {
+_medicalPass = _rimmySlotMedical get (vehicleVarName player);
+[{[(_this select 0),(_this select 1)] call ace_medical_fnc_deserializeState},[player,_medicalPass]] call CBA_fnc_directCall;
+};
 };
 
 if (_hungerLoadChoice == 1) then {

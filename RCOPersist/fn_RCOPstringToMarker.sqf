@@ -52,7 +52,8 @@ _marker setMarkerAlphaLocal parseNumber _markerAlpha;
 if ((count _polyLineArray) > 0) then {
 	_marker setMarkerPolylineLocal _polyLineArray;
 } else {
-	_marker setMarkerTypeLocal _markerType;
+	if (!(_markerType == "none")) then {
+	_marker setMarkerTypeLocal _markerType};
 	_marker setMarkerSizeLocal parseSimpleArray _markerSize;
 	_marker setMarkerBrushLocal _markerBrush;
 	_marker setMarkerTextLocal _markerText;

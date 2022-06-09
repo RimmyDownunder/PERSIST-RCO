@@ -12,36 +12,38 @@ if (isPlayer player) then {
 	player setVariable ["rimmy_camp_var_markerPass",_markerData,true];
 	};
 
-hint "Your map data has been saved.";
+hint "Your map marker data has been saved, full save proceeding...";
 
-sleep 3;
+sleep 2;
 
 if (isServer) then {
 
 	{if (count units _x == 0) then {deleteGroup _x}} forEach allGroups;
 	
-	_recGroupLeaderSide = [];
-	_recGroupLocation = [];
-	_recGroupVehicle = [];
-	_recGroupLeader = [];
-	_recGroupLeaderType = [];
-	_recGroupCallsign = [];
-	_recGroupNumbers = [];
-	_recContainerArray = [];
-	_fobAnchorLoc = [];
-	_list = [];
-	_finalPass = [];
-	_finalMinePass = [];
-	_finalCrateCargo = [];
-	_finalCratePass = [];
-	_finalCrateStats = [];	
-	_vehicleDamage = [];
-	_vehicleTurrets = [];
-	_crateBudget = [];
-	_FOBMarker = rimmy_camp_var_FOBMarker;
-	_permittedObjects = rimmy_camp_var_permittedFOBObjects;
-	_cratesToSave = rimmy_camp_var_cratesToSave;
-	_permittedMines = rimmy_camp_var_permittedMines;
+	private _recGroupLeaderSide = [];
+	private _recGroupLocation = [];
+	private _recGroupVehicle = [];
+	private _recGroupLeader = [];
+	private _recGroupLeaderType = [];
+	private _recGroupCallsign = [];
+	private _recGroupNumbers = [];
+	private _recContainerArray = [];
+	private _fobAnchorLoc = [];
+	private _list = [];
+	private _finalPass = [];
+	private _finalMinePass = [];
+	private _DAMminefieldMarkerPass = [];
+	private _finalCrateCargo = [];
+	private _finalCratePass = [];
+	private _finalCrateStats = [];	
+	private _vehicleDamage = [];
+	private _vehicleTurrets = [];
+	private _vehiclePylonInfo = [];
+	private _crateBudget = [];
+	private _FOBMarker = rimmy_camp_var_FOBMarker;
+	private _permittedObjects = rimmy_camp_var_permittedFOBObjects;
+	private _cratesToSave = rimmy_camp_var_cratesToSave;
+	private _permittedMines = rimmy_camp_var_permittedMines;
 	fobDeleteBlockerGlobal = rimmy_camp_var_fobDeleteBlocker;
 	
 	if (_FOBMarker == "") then {_FOBMarker = "Land_PortableCabinet_01_closed_black_F";};
@@ -53,6 +55,7 @@ if (isServer) then {
 	finalPassGlobal = [];
 	FOBAnchorLocGlobal = [];
 	finalMinePassGlobal = [];
+	DAMminefieldMarkerPassGlobal = [];
 	recGroupLeaderSideGlobal = [];
 	recGroupLocationGlobal = [];
 	recGroupVehicleGlobal = [];
@@ -63,6 +66,7 @@ if (isServer) then {
 	finalCratePassGlobal = [];
 	finalCrateBudgetGlobal = [];
 	finalCrateStatsGlobal = [];
+	mineListToDelete = [];
 	
 	{
 	{ 
@@ -98,13 +102,25 @@ if (isServer) then {
 	if (_mineType in _permittedMines) then {
 	_mineLoc = getPosATL _x; 
 	_mineDir = vectorDir _x; 
-	_mineUp = vectorUp _x;  
-	_finalMinePass pushBack [_mineType,_mineLoc,_mineDir,_mineUp]; 
+	_mineUp = vectorUp _x; 
+	_mineRevealSides = [];	
+	if (_x mineDetectedBy west) then {_mineRevealSides pushBack west};
+	if (_x mineDetectedBy east) then {_mineRevealSides pushBack east};
+	if (_x mineDetectedBy resistance) then {_mineRevealSides pushBack resistance};
+	_finalMinePass pushBack [_mineType,_mineLoc,_mineDir,_mineUp,_mineRevealSides]; 
 	
 	finalMinePassGlobal = _finalMinePass;
 	
 	};
 	} forEach allMines;
+	
+	mineListToDelete = _permittedMines;
+	
+	if (!(isNil "RCODAM_fnc_RCODAMcheckGroupMines")) then {
+	_DAMminefieldMarkerPass = call RCOP_fnc_RCOPminefieldMarkers;
+
+	DAMminefieldMarkerPassGlobal = _DAMminefieldMarkerPass;
+	};
 	
 	{ 
 	_groupLeaderSide = side leader _x;
@@ -182,13 +198,15 @@ if (isServer) then {
 	_vehicleDamage = getAllHitPointsDamage _crateRecorder;
 	_vehicleTurrets = magazinesAllTurrets _crateRecorder;	
 	_vehicleAmmoCargo = _crateRecorder call ace_rearm_fnc_getSupplyCount;
-	_finalCrateStats pushBack [_vehicleFuel,_vehicleFuelCargo,_vehicleDamage,_vehicleTurrets,_vehicleAmmoCargo]; 
+	_vehiclePylonInfo = getAllPylonsInfo _crateRecorder;
+	_finalCrateStats pushBack [_vehicleFuel,_vehicleFuelCargo,_vehicleDamage,_vehicleTurrets,_vehicleAmmoCargo,_vehiclePylonInfo]; 
 	finalCrateStatsGlobal = _finalCrateStats;
 	} else {
 	_vehicleFuel = -1;
 	_vehicleFuelCargo = -1;
 	_vehicleAmmoCargo = -1;
-	_finalCrateStats pushBack [_vehicleFuel,_vehicleFuelCargo,_vehicleDamage,_vehicleTurrets,_vehicleAmmoCargo];
+	_vehiclePylonInfo = [];
+	_finalCrateStats pushBack [_vehicleFuel,_vehicleFuelCargo,_vehicleDamage,_vehicleTurrets,_vehicleAmmoCargo,_vehiclePylonInfo];
 	finalCrateStatsGlobal = _finalCrateStats;
 	};	
 	} forEach finalCratePassGlobal;
@@ -202,32 +220,30 @@ if (isServer) then {
 	if (vehicleVarName _x != "") then {
 	recSavedSlotLoadout set [vehicleVarName _x, getUnitloadout _x];
 	
-	if(!(isnil "ace_medical_fnc_serializeState")) then
-	{
-	// Function available!
-	_recSavedSlotMedicalJSON = [_x] call ace_medical_fnc_serializeState;
+	if(!(isnil "ace_medical_fnc_serializeState")) then {
+	_recSavedSlotMedicalJSON = [{_this call ace_medical_fnc_serializeState}, _x] call CBA_fnc_directCall;
 	recSavedSlotMedical set [vehicleVarName _x, _recSavedSlotMedicalJSON];
 	};
 	
 	_hungerNilTester = nil;
 	_hungerNilTester = _x getvariable "acex_field_rations_hunger";
+	private _recRationPass = [];
 	if(!(isnil "_hungerNilTester")) then
 	{
 	// Get current thirst and hunger
-	_recRationPass = [];
 	_recVarThirst = _x getVariable ["acex_field_rations_thirst", 0];
 	_recVarHunger = _x getVariable ["acex_field_rations_hunger", 0];
 	_recRationPass pushBack _recVarThirst;
 	_recRationPass pushBack _recVarHunger;	
-	recSavedSlotHunger set [vehicleVarName _x, _recRationPass];
 	};
+	recSavedSlotHunger set [vehicleVarName _x, _recRationPass];
 	
 	_slotMarkerGet = _x getVariable "rimmy_camp_var_markerPass";
 	recSavedSlotMarkers set [vehicleVarName _x, _slotMarkerGet];
 	};
 	}forEach allPlayers;
 	
-	_previousSlots = profileNamespace getVariable "rimmy_camp_var_slotLoadout";
+	private _previousSlots = profileNamespace getVariable "rimmy_camp_var_slotLoadout";
 	
 	if ((!isNil "_previousSlots") && _oldSlot) then {
 	{
@@ -242,6 +258,7 @@ if (isServer) then {
 	publicVariable "finalPassGlobal";
 	publicVariable "FOBAnchorLocGlobal";
 	publicVariable "finalMinePassGlobal";
+	publicVariable "DAMminefieldMarkerPassGlobal";
 	publicVariable "recGroupLeaderSideGlobal";
 	publicVariable "recGroupLocationGlobal";
 	publicVariable "recGroupVehicleGlobal";
@@ -257,6 +274,7 @@ if (isServer) then {
 	publicVariable "recSavedSlotHunger";
 	publicVariable "recSavedSlotMedical";
 	publicVariable "recSavedSlotMarkers";
+	publicVariable "mineListToDelete";
 
 	sleep 2;
 
@@ -271,6 +289,7 @@ profileNamespace setVariable ["rimmy_camp_var_FOBMarkerForDelete", FOBMarkerGlob
 profileNamespace setVariable ["rimmy_camp_var_recBuilding", finalPassGlobal];
 profileNamespace setVariable ["rimmy_camp_var_recFOBAnchorLoc", FOBAnchorLocGlobal];
 profileNamespace setVariable ["rimmy_camp_var_recMine", finalMinePassGlobal];
+profileNamespace setVariable ["rimmy_camp_var_recDAMMinefieldLocation", DAMminefieldMarkerPassGlobal];
 profileNamespace setVariable ["rimmy_camp_var_recGroupLeaderSide", recGroupLeaderSideGlobal];
 profileNamespace setVariable ["rimmy_camp_var_recGroupLocation", recGroupLocationGlobal];
 profileNamespace setVariable ["rimmy_camp_var_recGroupVehicle", recGroupVehicleGlobal];
@@ -286,22 +305,21 @@ profileNamespace setVariable ["rimmy_camp_var_slotLoadout", recSavedSlotLoadout]
 profileNamespace setVariable ["rimmy_camp_var_slotHunger", recSavedSlotHunger]; 
 profileNamespace setVariable ["rimmy_camp_var_slotMedical", recSavedSlotMedical]; 
 profileNamespace setVariable ["rimmy_camp_var_slotMarkers", recSavedSlotMarkers]; 
+profileNamespace setVariable ["rimmy_camp_var_recMineListToDelete", mineListToDelete];
 
 _savedPlayerLoadout = getUnitLoadout player;
 profileNamespace setVariable ["rimmy_camp_var_playerLoadout", _savedPlayerLoadout]; 
 
-//if(!(isnil "ace_medical_fnc_serializeState")) then
-//{
-// Function available!
-//_recPlayerSavedSlotMedicalJSON = [player] call ace_medical_fnc_serializeState;
-//profileNamespace setVariable ["rimmy_camp_var_playerMedical", _recPlayerSavedSlotMedicalJSON]; 
-//};
+if(!(isnil "ace_medical_fnc_serializeState")) then
+{
+_recSavedProfileMedicalJSON = [{_this call ace_medical_fnc_serializeState}, player] call CBA_fnc_directCall;
+profileNamespace setVariable ["rimmy_camp_var_playerMedical", _recSavedProfileMedicalJSON]; 
+};
 
 _hungerNilTesterPlayer = player getvariable "acex_field_rations_hunger";
-if(!(isnil "_hungerNilTesterPlayer")) then
-{
+if(!(isnil "_hungerNilTesterPlayer")) then {
 // Get current thirst and hunger
-_recPlayerRationPass = [];
+private _recPlayerRationPass = [];
 _recPlayerVarThirst = player getVariable ["acex_field_rations_thirst", 0];
 _recPlayerVarHunger = player getVariable ["acex_field_rations_hunger", 0];
 _recPlayerRationPass pushBack _recPlayerVarThirst;

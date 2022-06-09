@@ -98,7 +98,7 @@
             <English>There are two methods to load player information. The first and old version uses the profile of the player, whilst the second version is based on the slot taken in the operation instead. Every slot to be saved/loaded needs a variable named assigned, for example persist2, persist3, etc. This is the recommended system. By default, it will just load player gear, with other options listed below.</English>
         </Key>
 		<Key ID = "STR_RCOP_Modules_LoadMedical_tooltip">
-            <English>If toggled on, the saved player data about their ACE Medical status will be loaded. CURRENTLY PLACEHOLDER: Next ACE update will contain the function needed to save/load medical data, when ACE updates this option will work.</English>
+            <English>If toggled on, the saved player data about their ACE Medical status will be loaded.</English>
         </Key>
 		<Key ID = "STR_RCOP_Modules_LoadHunger_tooltip">
             <English>If toggled on, the saved player data about their ACEX hunger and thirst will be loaded.</English>

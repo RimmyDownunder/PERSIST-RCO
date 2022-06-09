@@ -44,7 +44,7 @@ class CfgFunctions
 {
     class RCOP
     {
-        class RCOP_functions
+        class RCOPersist
         {
             tag = "RCOP";
             file = "\RCOP\RCOPersist";
@@ -59,12 +59,13 @@ class CfgFunctions
 			class RCOPmarkerToString;
 			class RCOPstringToMarker;
 			class RCOPsavingMarkers;
-			
+			class RCOPminefieldMarkers;
+			class RCOPdelaySupplyReload;			
         };
 	};
 	class RCOF
     {
-		class RCOF_functions
+		class RCOFortify
         {
             tag = "RCOF";
             file = "\RCOP\RCOFortify";
@@ -132,13 +133,13 @@ class Display3DEN
 				{
 					text = "Save Persistence Data to Clipboard";
 					picture = "";
-					action = "[] call RCOP_fnc_RCOPtoClipboard;";
+					action = "call RCOP_fnc_RCOPtoClipboard;";
 				};
 				class RCOP_LoadFromClipboard
 				{
 					text = "Load Persistence Data from Clipboard";
 					picture = "";
-					action = "[] call RCOP_fnc_RCOPfromClipboard;";
+					action = "call RCOP_fnc_RCOPfromClipboard;";
 				};
 			};
 		};

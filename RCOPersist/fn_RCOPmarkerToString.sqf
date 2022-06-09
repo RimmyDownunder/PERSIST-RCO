@@ -30,7 +30,7 @@ if (_markerShape isEqualTo "POLYLINE") then {
 	_markerType = markerType _markerName;
 };
 
-
+if (_markerType == "") then {_markerType = "none"};
 
 toFixed 4;
 private _markerPosition = str markerPos [_markerName, true];
