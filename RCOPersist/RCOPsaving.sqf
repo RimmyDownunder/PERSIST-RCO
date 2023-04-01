@@ -217,31 +217,46 @@ if (isServer) then {
 	recSavedSlotMarkers = createHashMap;
 	
 	{
-	if (vehicleVarName _x != "") then {
-	recSavedSlotLoadout set [vehicleVarName _x, getUnitloadout _x];
-	
-	if(!(isnil "ace_medical_fnc_serializeState")) then {
-	_recSavedSlotMedicalJSON = [{_this call ace_medical_fnc_serializeState}, _x] call CBA_fnc_directCall;
-	recSavedSlotMedical set [vehicleVarName _x, _recSavedSlotMedicalJSON];
-	};
-	
-	_hungerNilTester = nil;
-	_hungerNilTester = _x getvariable "acex_field_rations_hunger";
-	private _recRationPass = [];
-	if(!(isnil "_hungerNilTester")) then
-	{
-	// Get current thirst and hunger
-	_recVarThirst = _x getVariable ["acex_field_rations_thirst", 0];
-	_recVarHunger = _x getVariable ["acex_field_rations_hunger", 0];
-	_recRationPass pushBack _recVarThirst;
-	_recRationPass pushBack _recVarHunger;	
-	};
-	recSavedSlotHunger set [vehicleVarName _x, _recRationPass];
-	
-	_slotMarkerGet = _x getVariable "rimmy_camp_var_markerPass";
-	recSavedSlotMarkers set [vehicleVarName _x, _slotMarkerGet];
-	};
-	}forEach allPlayers;
+		if (vehicleVarName _x != "") then {
+			private _loadout = getUnitLoadout _x;
+
+			// Check if player has earplugs in
+			if (_x getVariable ["ACE_hasEarPlugsin", false]) then {
+				// Uniform/Vest/Backpack is always represented by (_loadout select 3/4/5)
+				private _gear = [_loadout select 3, _loadout select 4, _loadout select 5];
+				private _slot = _gear findIf {_x isNotEqualTo []};
+
+				// If any of the above are valid, insert an instance of earplugs into saved inventory				
+				if (_slot > -1) then {
+					((_gear select _slot) select 1) append [["ACE_Earplugs", 1]];
+				};
+			};
+
+			recSavedSlotLoadout set [vehicleVarName _x, _loadout];
+
+			if (!(isnil "ace_medical_fnc_serializeState")) then {
+				_recSavedSlotMedicalJSON = [{_this call ace_medical_fnc_serializeState}, _x] call CBA_fnc_directCall;
+				recSavedSlotMedical set [vehicleVarName _x, _recSavedSlotMedicalJSON];
+			};
+
+			_hungerNilTester = nil;
+			_hungerNilTester = _x getvariable "acex_field_rations_hunger";
+			private _recRationPass = [];
+
+			if (!(isnil "_hungerNilTester")) then {
+				// Get current thirst and hunger
+				_recVarThirst = _x getVariable ["acex_field_rations_thirst", 0];
+				_recVarHunger = _x getVariable ["acex_field_rations_hunger", 0];
+				_recRationPass pushBack _recVarThirst;
+				_recRationPass pushBack _recVarHunger;	
+			};
+
+			recSavedSlotHunger set [vehicleVarName _x, _recRationPass];
+
+			_slotMarkerGet = _x getVariable "rimmy_camp_var_markerPass";
+			recSavedSlotMarkers set [vehicleVarName _x, _slotMarkerGet];
+		};
+	} forEach allPlayers;
 	
 	private _previousSlots = profileNamespace getVariable "rimmy_camp_var_slotLoadout";
 	
