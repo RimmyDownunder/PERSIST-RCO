@@ -56,8 +56,11 @@
 		<Key ID = "STR_RCOF_Modules_FortifySide_tooltip">
             <English>Which side gets the ability to Fortify?</English>
         </Key>
+        <Key ID = "STR_RCOF_Modules_DefaultArray_tooltip">
+            <English>An array of objects that can be built using the Fortify tool. Each object must be followed by a cost. This default list will ALWAYS appear, even if left empty. Example: [["Land_BagFence_Long_F", 10],["Land_BagBunker_Small_F", 50],["Land_Plank_01_4m_F", 10],["Land_PortableCabinet_01_closed_black_F", 5]]</English>
+        </Key>
 		<Key ID = "STR_RCOF_Modules_DesertArray_tooltip">
-            <English>An array of objects that can be built using the Fortify tool. Each object must be followed by a cost. Desert is the default list. Example: [["Land_BagFence_Long_F", 10],["Land_BagBunker_Small_F", 50],["Land_Plank_01_4m_F", 10],["Land_PortableCabinet_01_closed_black_F", 5]]</English>
+            <English>An array of objects that can be built using the Fortify tool. Each object must be followed by a cost. If left empty, the option to change to this list will not be present. Example: [["Land_BagFence_Long_F", 10],["Land_BagBunker_Small_F", 50],["Land_Plank_01_4m_F", 10],["Land_PortableCabinet_01_closed_black_F", 5]]</English>
         </Key>
 		<Key ID = "STR_RCOF_Modules_WoodlandArray_tooltip">
             <English>An array of objects that can be built using the Fortify tool. Each object must be followed by a cost. If left empty, the option to change to this list will not be present. Example: [["Land_BagFence_01_long_green_F", 10],["Land_BagBunker_01_small_green_F", 50],["Land_Plank_01_4m_F", 10],["Land_PortableCabinet_01_closed_black_F", 5]]</English>

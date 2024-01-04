@@ -123,6 +123,14 @@ class RCOF_LimitedFortify: Module_F
 				};
 			};
 		};
+		class RCOF_DefaultArray: Edit
+		{
+			property = "RCOF_DefaultArray";
+			displayName = "Default List";
+			tooltip = $STR_RCOF_Modules_DefaultArray_tooltip;
+			typeName = "STRING";
+			defaultValue = "[['Land_BagFence_Long_F', 10],['Land_BagBunker_Small_F', 50],['Land_Plank_01_4m_F', 10],['Land_PortableCabinet_01_closed_black_F', 5]]";
+		};
 		class RCOF_DesertArray: Edit
 		{
 			property = "RCOF_DesertArray";

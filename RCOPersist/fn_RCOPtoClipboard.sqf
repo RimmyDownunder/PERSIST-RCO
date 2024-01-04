@@ -24,6 +24,7 @@ _20 = profileNamespace getVariable "rimmy_camp_var_playerMedical";
 _21 = profileNamespace getVariable "rimmy_camp_var_slotMarkers";
 _22 = profileNamespace getVariable "rimmy_camp_var_recDAMMinefieldLocation";
 _23 = profileNamespace getVariable "rimmy_camp_var_recMineListToDelete";
+_24 = profileNamespace getVariable "rimmy_camp_var_permittedFOBObjects";
 
 _clipboardSaver pushBack _0;
 _clipboardSaver pushBack _1;
@@ -49,5 +50,6 @@ _clipboardSaver pushBack _20;
 _clipboardSaver pushBack _21;
 _clipboardSaver pushBack _22;
 _clipboardSaver pushBack _23;
+_clipboardSaver pushBack _24;
 
 copyToClipboard str _clipboardSaver;

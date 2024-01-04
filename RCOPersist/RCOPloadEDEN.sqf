@@ -55,6 +55,7 @@ if (isServer) then {
 	private _crateStats = profileNamespace getVariable "rimmy_camp_var_recCrateStats";
 	private _crateSpawner = profileNamespace getVariable "rimmy_camp_var_recCrateLocation";
 	private _mineListToDelete = profileNamespace getVariable "rimmy_camp_var_recMineListToDelete";
+	private _permittedObjects = profileNamespace getVariable "rimmy_camp_var_permittedFOBObjects";
 	
 	private _unitCounter = count _unitLocs;
 	
@@ -101,6 +102,19 @@ if (isServer) then {
 	};
 	
 	// FOB Marker + Objects
+
+	// first, delete all FOB Anchors present
+
+	_3DENTriggers = (all3DENEntities select 2);
+	_delete3DENTriggers = [];
+
+	{
+		if (_x get3DENAttribute "text" isEqualTo ["FOB Anchor"]) then {
+			_delete3DENTriggers pushBack _x;
+		};
+	} forEach _3DENTriggers;
+
+	delete3DENEntities _delete3DENTriggers;
 		
 	if (_deleteChoice == 1) then {
 	
@@ -112,17 +126,16 @@ if (isServer) then {
 	_deleteFOBFinder pushBack _fobDeleteBlocker;
 	
 	{
-	_deleteFOBFinder2 = [];
-	_deleteCentre = _x;
-	{
-	_deleteFOBFinder2 append ((getPosATL _deleteCentre) nearObjects [_x, 100]);
-	{
-	if ((_x nearObjects [_fobDeleteBlocker,100]) isEqualTo []) then 
-	{
-	_deleteFOBFinder3 pushBack _x;
-	};	
-	} forEach _deleteFOBFinder2;
-	} forEach _deleteFOBFinder;
+		_deleteFOBFinder2 = [];
+		_deleteCentre = _x;
+		{
+		_deleteFOBFinder2 append ((getPosATL _deleteCentre) nearObjects [_x, 100]);
+			{
+				if ((_x nearObjects [_fobDeleteBlocker,100]) isEqualTo []) then {
+					_deleteFOBFinder3 pushBack _x;
+				};	
+			} forEach _deleteFOBFinder2;
+		} forEach _deleteFOBFinder;
 	} forEach allMissionObjects _FOBMarker;
 	
 	delete3DENEntities _deleteFOBFinder3;
@@ -140,32 +153,86 @@ if (isServer) then {
 	_createdFOBAreaMarker set3DENAttribute ["text", "FOB Anchor"];
 	
 	} forEach _FOBCentre;
-	
+
+	// Intent is to delete any objects with a fresh FOB anchor so that the fresh save can replace them
+
+	_3DENTriggers2 = (all3DENEntities select 2);
+	_3DENFOBTriggers = [];
+
+	{
+		if ((_x get3DENAttribute "text") isEqualTo ["FOB Anchor"]) then {
+			_3DENFOBTriggers pushBack _x;
+		};
+	} forEach _3DENTriggers2;
+
+	_fobObjectsToDelete = [];
+	{
+		if (typeOf _x in _permittedObjects) then {
+				_fobObjectToTest = _x;
+				{
+					if (_fobObjectToTest inArea [getPos _x, 100, 100, 50, false]) then {
+						_fobObjectsToDelete pushBack _fobObjectToTest;
+					};
+				} forEach _3DENFOBTriggers;
+		};
+	} forEach (all3DENEntities select 0);
+
+	delete3DENEntities _fobObjectsToDelete;
+
+	// FOB Objects Spawn
+
 	{ 
-	_fobObject = create3DENEntity ["Object", (_x select 0),(_x select 1)];
-	_3denAngle = [(_x select 2), (_x select 3)] call fhcb_getEdenAngles;
+		_fobObject = create3DENEntity ["Object", (_x select 0),(_x select 1)];
+		_3denAngle = [(_x select 2), (_x select 3)] call fhcb_getEdenAngles;
 	
-	_fobObject set3DENAttribute ["rotation",_3denAngle];
+		_fobObject set3DENAttribute ["rotation",_3denAngle];
 	} forEach _FOBPass;
+
 	
 	// Mines
 	
 	if (_deleteChoice == 1) then {
 	_deleteMines = [];
-	{	
-	private _cutStringNum = _x find "_ammo";
-	if (_cutStringNum == -1) then {_cutStringNum = _x find "_Range_Ammo"};
+	{
+	
+	_presetCheck = 0;
+	switch (_x) do 	{
+		case "rhs_ammo_ptm1": {_deleteMines pushBackUnique "rhs_mine_ptm1"};
+		case "rhs_ammo_pfm1": {_deleteMines pushBackUnique "rhs_mine_pfm1"};
+		default { _presetCheck = 1; };
+	};
+	
+	if (_presetCheck == 1) then {
+	private _cutStringNum = _x find "_Range_Ammo";
+	if (_cutStringNum == -1) then {_cutStringNum = _x find "_Wire_Ammo"};
 	if (_cutStringNum == -1) then {_cutStringNum = _x find "_Ammo"};
+	if (_cutStringNum == -1) then {_cutStringNum = _x find "_ammo"};
 	
 	_minePicked = _x select [0, _cutStringNum];
-	_deleteMines pushBackUnique _minePicked;} forEach _mineListToDelete;
-	{delete3DENEntities allMissionObjects _x;} forEach _deleteMines;
+	_deleteMines pushBackUnique _minePicked;
+	};
+	} forEach _mineListToDelete;
+	
+	{if (_x isNotEqualTo "") then {delete3DENEntities allMissionObjects _x;}} forEach _deleteMines;
+
 	};
 	
 	{
 	_mineType = (_x select 0);
-	_cutStringNum = _mineType find "_Range_Ammo";
-	_minePicked = _mineType select [0, _cutStringNum];
+	
+	_presetCheck = 0;
+	switch (_x) do	{
+		case "rhs_ammo_ptm1": {_minePicked = "rhs_mine_ptm1"};
+		case "rhs_ammo_pfm1": {_minePicked = "rhs_mine_pfm1"};
+		default { _presetCheck = 1; };
+	};
+	
+	if (_presetCheck == 1) then {
+	private _cutStringNum = _mineType find "_Range_Ammo";
+	if (_cutStringNum == -1) then {_cutStringNum = _x find "_Wire_Ammo"};
+	if (_cutStringNum == -1) then {_cutStringNum = _x find "_Ammo"};
+	if (_cutStringNum == -1) then {_cutStringNum = _x find "_ammo"};
+	_minePicked = _mineType select [0, _cutStringNum];};
 	_mineAdjuster = (_x select 1);
 	_mineAdjuster set [2, 0];
 	_mine = create3DENEntity ["Object", _minePicked,_mineAdjuster];

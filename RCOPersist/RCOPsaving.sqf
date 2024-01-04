@@ -1,10 +1,10 @@
 params ["_oldSlot"];
 if (isNil "_oldSlot") then { _oldSlot = true; };
-
-RCOPsaveComplete = 0;
+if (isNil "RCOPsaveComplete") then { RCOPsaveComplete = 0 };
 
 hint "Starting PERSIST save.";
 
+// SUSPICIOUS CODE, MAY BE CAUSING MAP LOAD PROBLEMS
 if (isPlayer player) then {
 	_markerData = [];
 	_markerData = call RCOP_fnc_RCOPsavingMarkers;
@@ -14,7 +14,7 @@ if (isPlayer player) then {
 
 hint "Your map marker data has been saved, full save proceeding...";
 
-sleep 2;
+sleep 1;
 
 if (isServer) then {
 
@@ -67,19 +67,13 @@ if (isServer) then {
 	finalCrateBudgetGlobal = [];
 	finalCrateStatsGlobal = [];
 	mineListToDelete = [];
-	
-	{
-	{ 
-	_x setVariable ["rimmy_camp_var_checkIfAlreadySaved", 0, true];
-	} forEach allMissionObjects _x; 
-	} forEach _permittedObjects; 
-	 
+		 
 	{	
 	
 	_list = nearestObjects [getPosATL _x, _permittedObjects, 100]; 
 	
 	{ 
-	if ((_x getVariable "rimmy_camp_var_checkIfAlreadySaved") != 1) then {
+	if ((_x getVariable ["rimmy_camp_var_checkIfAlreadySaved",0]) != 1) then {
 	_midBuildType = typeOf _x;
 	_midBuildLoc = getPosATL _x; 
 	_midBuildDir = vectorDir _x; 
@@ -123,6 +117,7 @@ if (isServer) then {
 	};
 	
 	{ 
+	if ({ alive _x } count units _x > 0) then {
 	_groupLeaderSide = side leader _x;
 	_recGroupLeaderSide pushBack _groupLeaderSide;
 	recGroupLeaderSideGlobal = _recGroupLeaderSide;
@@ -146,6 +141,7 @@ if (isServer) then {
 	_groupNumbers = count units _x;
 	_recGroupNumbers pushBack _groupNumbers;
 	recGroupNumbersGlobal = _recGroupNumbers;
+	};
 	} forEach allGroups;
 	
 	{
@@ -171,11 +167,11 @@ if (isServer) then {
 	_containerFinder = everyContainer _crateRecorder;
 	
 	{
-	_containerType = (_x select 0);
-	_magazineInContainer = MagazineCargo (_x select 1);
-	_weaponInContainer = WeaponCargo (_x select 1); 
-	_itemInContainer = ItemCargo (_x select 1); 
-	_finalContainerCargo pushBack [_containerType,_magazineInContainer,_weaponInContainer,_itemInContainer]; 
+		_containerType = (_x select 0);
+		_magazineInContainer = MagazineCargo (_x select 1);
+		_weaponInContainer = WeaponCargo (_x select 1); 
+		_itemInContainer = ItemCargo (_x select 1); 
+		_finalContainerCargo pushBack [_containerType,_magazineInContainer,_weaponInContainer,_itemInContainer]; 
 	} forEach _containerFinder;
 	
 	_finalCrateCargo pushBack [_magazineInCrate,_weaponInCrate,_itemInCrate, _finalContainerCargo]; 
@@ -218,30 +214,45 @@ if (isServer) then {
 	
 	{
 	if (vehicleVarName _x != "") then {
-	recSavedSlotLoadout set [vehicleVarName _x, getUnitloadout _x];
-	
-	if(!(isnil "ace_medical_fnc_serializeState")) then {
-	_recSavedSlotMedicalJSON = [{_this call ace_medical_fnc_serializeState}, _x] call CBA_fnc_directCall;
-	recSavedSlotMedical set [vehicleVarName _x, _recSavedSlotMedicalJSON];
-	};
-	
-	_hungerNilTester = nil;
-	_hungerNilTester = _x getvariable "acex_field_rations_hunger";
-	private _recRationPass = [];
-	if(!(isnil "_hungerNilTester")) then
-	{
-	// Get current thirst and hunger
-	_recVarThirst = _x getVariable ["acex_field_rations_thirst", 0];
-	_recVarHunger = _x getVariable ["acex_field_rations_hunger", 0];
-	_recRationPass pushBack _recVarThirst;
-	_recRationPass pushBack _recVarHunger;	
-	};
-	recSavedSlotHunger set [vehicleVarName _x, _recRationPass];
-	
-	_slotMarkerGet = _x getVariable "rimmy_camp_var_markerPass";
-	recSavedSlotMarkers set [vehicleVarName _x, _slotMarkerGet];
-	};
-	}forEach allPlayers;
+			private _loadout = getUnitLoadout _x;
+
+			// Check if player has earplugs in
+			if (_x getVariable ["ACE_hasEarPlugsin", false]) then {
+				// Uniform/Vest/Backpack is always represented by (_loadout select 3/4/5)
+				private _gear = [_loadout select 3, _loadout select 4, _loadout select 5];
+				private _slot = _gear findIf {_x isNotEqualTo []};
+
+				// If any of the above are valid, insert an instance of earplugs into saved inventory				
+				if (_slot > -1) then {
+					((_gear select _slot) select 1) append [["ACE_Earplugs", 1]];
+				};
+			};
+
+			recSavedSlotLoadout set [vehicleVarName _x, _loadout];
+
+			if (!(isnil "ace_medical_fnc_serializeState")) then {
+				_recSavedSlotMedicalJSON = [{_this call ace_medical_fnc_serializeState}, _x] call CBA_fnc_directCall;
+				recSavedSlotMedical set [vehicleVarName _x, _recSavedSlotMedicalJSON];
+			};
+
+			_hungerNilTester = nil;
+			_hungerNilTester = _x getvariable "acex_field_rations_hunger";
+			private _recRationPass = [];
+
+			if (!(isnil "_hungerNilTester")) then {
+				// Get current thirst and hunger
+				_recVarThirst = _x getVariable ["acex_field_rations_thirst", 0];
+				_recVarHunger = _x getVariable ["acex_field_rations_hunger", 0];
+				_recRationPass pushBack _recVarThirst;
+				_recRationPass pushBack _recVarHunger;	
+			};
+
+			recSavedSlotHunger set [vehicleVarName _x, _recRationPass];
+
+			_slotMarkerGet = _x getVariable "rimmy_camp_var_markerPass";
+			recSavedSlotMarkers set [vehicleVarName _x, _slotMarkerGet];
+		};
+	} forEach allPlayers;
 	
 	private _previousSlots = profileNamespace getVariable "rimmy_camp_var_slotLoadout";
 	
@@ -275,6 +286,7 @@ if (isServer) then {
 	publicVariable "recSavedSlotMedical";
 	publicVariable "recSavedSlotMarkers";
 	publicVariable "mineListToDelete";
+	publicVariable "rimmy_camp_var_permittedFOBObjects";
 
 	sleep 2;
 
@@ -306,6 +318,7 @@ profileNamespace setVariable ["rimmy_camp_var_slotHunger", recSavedSlotHunger];
 profileNamespace setVariable ["rimmy_camp_var_slotMedical", recSavedSlotMedical]; 
 profileNamespace setVariable ["rimmy_camp_var_slotMarkers", recSavedSlotMarkers]; 
 profileNamespace setVariable ["rimmy_camp_var_recMineListToDelete", mineListToDelete];
+profileNamespace setVariable ["rimmy_camp_var_permittedFOBObjects", rimmy_camp_var_permittedFOBObjects];
 
 _savedPlayerLoadout = getUnitLoadout player;
 profileNamespace setVariable ["rimmy_camp_var_playerLoadout", _savedPlayerLoadout]; 

@@ -42,6 +42,7 @@ publicVariable "rimmy_camp_var_fortifyObjectBigMax";
 publicVariable "rimmy_camp_var_fortifyObjectSmallMax";
 publicVariable "rimmy_camp_var_fortifyBuildRange";
 
+_defaultPreArray = _module getVariable "RCOF_DefaultArray";
 _desertPreArray = _module getVariable "RCOF_DesertArray";
 _woodlandPreArray = _module getVariable "RCOF_WoodlandArray";
 _largePreArray = _module getVariable "RCOF_LargeArray";
@@ -56,13 +57,16 @@ rimmy_camp_var_fortifyCampArray = [];
 rimmy_camp_var_fortifyCustom1Array = [];
 rimmy_camp_var_fortifyCustom2Array = [];
 
-if (_desertPreArray != "") then {rimmy_camp_var_fortifyDesertArray = parseSimpleArray _desertPreArray;} else {rimmy_camp_var_fortifyDesertArray = [["Land_BagFence_Long_F", 10],["Land_BagBunker_Small_F", 50],["Land_Plank_01_4m_F", 10],["Land_PortableCabinet_01_closed_black_F", 5]];};
-if (_woodlandPreArray != "") then {rimmy_camp_var_fortifyWoodlandArray = parseSimpleArray _woodlandPreArray;};
-if (_largePreArray != "") then {rimmy_camp_var_fortifyLargeArray = parseSimpleArray _largePreArray;};
-if (_campPreArray != "") then {rimmy_camp_var_fortifyCampArray = parseSimpleArray _campPreArray;};
-if (_custom1PreArray != "") then {rimmy_camp_var_fortifyCustom1Array = parseSimpleArray _custom1PreArray;};
-if (_custom2PreArray != "") then {rimmy_camp_var_fortifyCustom2Array = parseSimpleArray _custom2PreArray;};
+if (_defaultPreArray isNotEqualTo "") then {rimmy_camp_var_fortifyDefaultArray = parseSimpleArray _defaultPreArray;} else {rimmy_camp_var_fortifyDefaultArray = [["Land_BagFence_Long_F", 10],["Land_BagBunker_Small_F", 50],["Land_Plank_01_4m_F", 10],["Land_PortableCabinet_01_closed_black_F", 5]];};
+if (_desertPreArray isNotEqualTo "") then {rimmy_camp_var_fortifyDesertArray = parseSimpleArray _desertPreArray;};
+if (_woodlandPreArray isNotEqualTo "") then {rimmy_camp_var_fortifyWoodlandArray = parseSimpleArray _woodlandPreArray;};
+if (_largePreArray isNotEqualTo "") then {rimmy_camp_var_fortifyLargeArray = parseSimpleArray _largePreArray;};
+if (_campPreArray isNotEqualTo "") then {rimmy_camp_var_fortifyCampArray = parseSimpleArray _campPreArray;};
+if (_custom1PreArray isNotEqualTo "") then {rimmy_camp_var_fortifyCustom1Array = parseSimpleArray _custom1PreArray;};
+if (_custom2PreArray isNotEqualTo "") then {rimmy_camp_var_fortifyCustom2Array = parseSimpleArray _custom2PreArray;};
 
+rimmy_camp_var_fortifyDefaultArrayKey = [];
+rimmy_camp_var_fortifyDefaultArrayValue = [];
 rimmy_camp_var_fortifyDesertArrayKey = [];
 rimmy_camp_var_fortifyDesertArrayValue = [];
 rimmy_camp_var_fortifyWoodlandArrayKey = [];
@@ -76,9 +80,16 @@ rimmy_camp_var_fortifyCustom1ArrayValue = [];
 rimmy_camp_var_fortifyCustom2ArrayKey = [];
 rimmy_camp_var_fortifyCustom2ArrayValue = [];
 
+for "_i" from 0 to ((count rimmy_camp_var_fortifyDefaultArray)-1) do {
+rimmy_camp_var_fortifyDefaultArrayKey pushBack ((rimmy_camp_var_fortifyDefaultArray select _i) select 0);
+rimmy_camp_var_fortifyDefaultArrayValue pushBack ((rimmy_camp_var_fortifyDefaultArray select _i) select 1);
+};
+
+if !(rimmy_camp_var_fortifyDesertArray isEqualTo []) then {
 for "_i" from 0 to ((count rimmy_camp_var_fortifyDesertArray)-1) do {
 rimmy_camp_var_fortifyDesertArrayKey pushBack ((rimmy_camp_var_fortifyDesertArray select _i) select 0);
 rimmy_camp_var_fortifyDesertArrayValue pushBack ((rimmy_camp_var_fortifyDesertArray select _i) select 1);
+};
 };
 
 if !(rimmy_camp_var_fortifyWoodlandArray isEqualTo []) then {
@@ -116,8 +127,11 @@ rimmy_camp_var_fortifyCustom2ArrayValue pushBack ((rimmy_camp_var_fortifyCustom2
 };
 };
 
-rimmy_camp_var_fortifySide = call compile (_module getVariable "RCOF_FortifySide");
+_fortifySidePicked = call compile (_module getVariable "RCOF_FortifySide");
+missionNamespace setVariable [format ["rimmy_camp_var_fortifySide_%1", (str _fortifySidePicked)],_fortifySidePicked];
 
+publicVariable "rimmy_camp_var_fortifyDefaultArrayKey";
+publicVariable "rimmy_camp_var_fortifyDefaultArrayValue";
 publicVariable "rimmy_camp_var_fortifyDesertArrayKey";
 publicVariable "rimmy_camp_var_fortifyDesertArrayValue";
 publicVariable "rimmy_camp_var_fortifyWoodlandArrayKey";
@@ -132,6 +146,7 @@ publicVariable "rimmy_camp_var_fortifyCustom2ArrayKey";
 publicVariable "rimmy_camp_var_fortifyCustom2ArrayValue";
 
 rimmy_camp_var_missionObjectChecker = [];
+rimmy_camp_var_missionObjectChecker insert [-1, rimmy_camp_var_fortifyDefaultArrayKey, true];
 rimmy_camp_var_missionObjectChecker insert [-1, rimmy_camp_var_fortifyDesertArrayKey, true];
 rimmy_camp_var_missionObjectChecker insert [-1, rimmy_camp_var_fortifyWoodlandArrayKey, true];
 rimmy_camp_var_missionObjectChecker insert [-1, rimmy_camp_var_fortifyLargeArrayKey, true];
@@ -144,10 +159,9 @@ publicVariable "rimmy_camp_var_missionObjectAllow";
 
 // init done
 
-[rimmy_camp_var_fortifySide, -1, rimmy_camp_var_fortifyDesertArray] call acex_fortify_fnc_registerObjects;
+[(missionNamespace getVariable format ["rimmy_camp_var_fortifySide_%1", str _fortifySidePicked]), -1, rimmy_camp_var_fortifyDefaultArray] call acex_fortify_fnc_registerObjects;
 
-currentFortifyList = "Desert";
-publicVariable "currentFortifyList";
+missionNamespace setVariable [format ["rimmy_camp_var_fortifyListUpdate_%1", str _fortifySidePicked],"Default",true];
 
 	rimmy_camp_var_fortifyAllowers = [];
 
@@ -278,35 +292,40 @@ checkFortifyStorage = ["checkFortifyStorage", "Check Building Supplies", "", {
 hint format ["This vehicle has %1 building supplies left.", str (_target getVariable "rimmy_camp_var_fortifyBudget")];}
 , {true}] call ace_interact_menu_fnc_createAction;
 
+changeFortifyDefault = ["changeFortifyDefault", "Change List to Default", "", {
+"RCOP\RCOfortify\listDefault.sqf" remoteExec ["execVM",2];
+"RCOP\RCOfortify\alertUpdate.sqf" remoteExec ["execVM",0];
+}, {(missionNamespace getVariable format ["rimmy_camp_var_fortifyListUpdate_%1", (str side _player)]) != "Default"}] call ace_interact_menu_fnc_createAction;
+
 changeFortifyDesert = ["changeFortifyDesert", "Change List to Desert", "", {
 "RCOP\RCOfortify\listDesert.sqf" remoteExec ["execVM",2];
 "RCOP\RCOfortify\alertUpdate.sqf" remoteExec ["execVM",0];
-}, {currentFortifyList != "Desert"}] call ace_interact_menu_fnc_createAction;
+}, {(missionNamespace getVariable format ["rimmy_camp_var_fortifyListUpdate_%1", (str side _player)]) != "Desert"}] call ace_interact_menu_fnc_createAction;
 
 changeFortifyWoodland = ["changeFortifyWoodland", "Change List to Woodland", "", {
 "RCOP\RCOfortify\listWoodland.sqf" remoteExec ["execVM",2];
 "RCOP\RCOfortify\alertUpdate.sqf" remoteExec ["execVM",0];
-}, {currentFortifyList != "Woodland"}] call ace_interact_menu_fnc_createAction;
+}, {(missionNamespace getVariable format ["rimmy_camp_var_fortifyListUpdate_%1", (str side _player)]) != "Woodland"}] call ace_interact_menu_fnc_createAction;
 
 changeFortifyLarge = ["changeFortifyLarge", "Change List to Large", "", {
 "RCOP\RCOfortify\listLarge.sqf" remoteExec ["execVM",2];
 "RCOP\RCOfortify\alertUpdate.sqf" remoteExec ["execVM",0];
-}, {currentFortifyList != "Large"}] call ace_interact_menu_fnc_createAction;
+}, {(missionNamespace getVariable format ["rimmy_camp_var_fortifyListUpdate_%1", (str side _player)]) != "Large"}] call ace_interact_menu_fnc_createAction;
 
 changeFortifyCamp = ["changeFortifyCamp", "Change List to Camp", "", {
 "RCOP\RCOfortify\listCamp.sqf" remoteExec ["execVM",2];
 "RCOP\RCOfortify\alertUpdate.sqf" remoteExec ["execVM",0];
-}, {currentFortifyList != "Camp"}] call ace_interact_menu_fnc_createAction;
+}, {(missionNamespace getVariable format ["rimmy_camp_var_fortifyListUpdate_%1", (str side _player)]) != "Camp"}] call ace_interact_menu_fnc_createAction;
 
 changeFortifyCustom1 = ["changeFortifyCustom1", "Change List to Custom 1", "", {
 "RCOP\RCOfortify\listCustom1.sqf" remoteExec ["execVM",2];
 "RCOP\RCOfortify\alertUpdate.sqf" remoteExec ["execVM",0];
-}, {currentFortifyList != "Custom 1"}] call ace_interact_menu_fnc_createAction;
+}, {(missionNamespace getVariable format ["rimmy_camp_var_fortifyListUpdate_%1", (str side _player)]) != "Custom 1"}] call ace_interact_menu_fnc_createAction;
 
 changeFortifyCustom2 = ["changeFortifyCustom2", "Change List to Custom 2", "", {
 "RCOP\RCOfortify\listCustom2.sqf" remoteExec ["execVM",2];
 "RCOP\RCOfortify\alertUpdate.sqf" remoteExec ["execVM",0];
-}, {currentFortifyList != "Custom 2"}] call ace_interact_menu_fnc_createAction;
+}, {(missionNamespace getVariable format ["rimmy_camp_var_fortifyListUpdate_%1", (str side _player)]) != "Custom 2"}] call ace_interact_menu_fnc_createAction;
 
 refillFortifyBudget = ["refillFortifyBudget", "Refill Building Supplies", "", {
 _supplyRefillTypeHolder = [];
@@ -344,7 +363,7 @@ hint "Checking new vehicles and objects - if they lack supplies, they'll be adde
 
 deleteMissionPlacedObject = ["deleteMissionPlacedObject", "Delete Mission Placed Object", "", {
 deleteVehicle _target;
-hint "You have deleted the object and recieved no refund as it was a mission object.";
+hint "You have deleted the object and received no refund as it was a mission object.";
 }, {"ACE_Fortify" in items _player}] call ace_interact_menu_fnc_createAction;
 
 {
@@ -355,7 +374,8 @@ hint "You have deleted the object and recieved no refund as it was a mission obj
 } forEach rimmy_camp_var_fortifyStation;
 
 [rimmy_camp_var_fortifyFOBCentre, 0, ["ACE_MainActions"], fortifyStorageSubmenu] call ace_interact_menu_fnc_addActionToClass;
-[rimmy_camp_var_fortifyFOBCentre, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyDesert] call ace_interact_menu_fnc_addActionToClass;
+[rimmy_camp_var_fortifyFOBCentre, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyDefault] call ace_interact_menu_fnc_addActionToClass;
+if !(rimmy_camp_var_fortifyDesertArrayKey isEqualTo []) then {[rimmy_camp_var_fortifyFOBCentre, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyDesert] call ace_interact_menu_fnc_addActionToClass;};
 if !(rimmy_camp_var_fortifyWoodlandArrayKey isEqualTo []) then {[rimmy_camp_var_fortifyFOBCentre, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyWoodland] call ace_interact_menu_fnc_addActionToClass;};
 if !(rimmy_camp_var_fortifyLargeArrayKey isEqualTo []) then {[rimmy_camp_var_fortifyFOBCentre, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyLarge] call ace_interact_menu_fnc_addActionToClass;};
 if !(rimmy_camp_var_fortifyCampArrayKey isEqualTo []) then {[rimmy_camp_var_fortifyFOBCentre, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyCamp] call ace_interact_menu_fnc_addActionToClass;};
@@ -363,55 +383,59 @@ if !(rimmy_camp_var_fortifyCustom1ArrayKey isEqualTo []) then {[rimmy_camp_var_f
 if !(rimmy_camp_var_fortifyCustom2ArrayKey isEqualTo []) then {[rimmy_camp_var_fortifyFOBCentre, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyCustom2] call ace_interact_menu_fnc_addActionToClass;};
 
 {
-{
-	[_x, 0, ["ACE_MainActions"], fortifyStorageSubmenu] call ace_interact_menu_fnc_addActionToObject;
-	[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], checkFortifyStorage] call ace_interact_menu_fnc_addActionToObject;
-	[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyDesert] call ace_interact_menu_fnc_addActionToObject;
-	if !(rimmy_camp_var_fortifyWoodlandArrayKey isEqualTo []) then {[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyWoodland] call ace_interact_menu_fnc_addActionToObject;};
-	if !(rimmy_camp_var_fortifyLargeArrayKey isEqualTo []) then {[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyLarge] call ace_interact_menu_fnc_addActionToObject;};
-	if !(rimmy_camp_var_fortifyCampArrayKey isEqualTo []) then {[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyCamp] call ace_interact_menu_fnc_addActionToObject;};
-	if !(rimmy_camp_var_fortifyCustom1ArrayKey isEqualTo []) then {[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyCustom1] call ace_interact_menu_fnc_addActionToObject;};
-	if !(rimmy_camp_var_fortifyCustom2ArrayKey isEqualTo []) then {[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyCustom2] call ace_interact_menu_fnc_addActionToObject;};
-} forEach allMissionObjects _x;
+	{
+		[_x, 0, ["ACE_MainActions"], fortifyStorageSubmenu] call ace_interact_menu_fnc_addActionToObject;
+		[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], checkFortifyStorage] call ace_interact_menu_fnc_addActionToObject;
+		[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyDefault] call ace_interact_menu_fnc_addActionToObject;
+		if !(rimmy_camp_var_fortifyDesertArrayKey isEqualTo []) then {[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyDesert] call ace_interact_menu_fnc_addActionToObject;};
+		if !(rimmy_camp_var_fortifyWoodlandArrayKey isEqualTo []) then {[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyWoodland] call ace_interact_menu_fnc_addActionToObject;};
+		if !(rimmy_camp_var_fortifyLargeArrayKey isEqualTo []) then {[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyLarge] call ace_interact_menu_fnc_addActionToObject;};
+		if !(rimmy_camp_var_fortifyCampArrayKey isEqualTo []) then {[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyCamp] call ace_interact_menu_fnc_addActionToObject;};
+		if !(rimmy_camp_var_fortifyCustom1ArrayKey isEqualTo []) then {[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyCustom1] call ace_interact_menu_fnc_addActionToObject;};
+		if !(rimmy_camp_var_fortifyCustom2ArrayKey isEqualTo []) then {[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyCustom2] call ace_interact_menu_fnc_addActionToObject;};
+	} forEach allMissionObjects _x;
 } forEach rimmy_camp_var_fortifyVehicleBig;
 
 {
-{
-	[_x, 0, ["ACE_MainActions"], fortifyStorageSubmenu] call ace_interact_menu_fnc_addActionToObject;
-	[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], checkFortifyStorage] call ace_interact_menu_fnc_addActionToObject;
-	[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyDesert] call ace_interact_menu_fnc_addActionToObject;
-	if !(rimmy_camp_var_fortifyWoodlandArrayKey isEqualTo []) then {[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyWoodland] call ace_interact_menu_fnc_addActionToObject;};
-	if !(rimmy_camp_var_fortifyLargeArrayKey isEqualTo []) then {[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyLarge] call ace_interact_menu_fnc_addActionToObject;};
-	if !(rimmy_camp_var_fortifyCampArrayKey isEqualTo []) then {[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyCamp] call ace_interact_menu_fnc_addActionToObject;};
-	if !(rimmy_camp_var_fortifyCustom1ArrayKey isEqualTo []) then {[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyCustom1] call ace_interact_menu_fnc_addActionToObject;};
-	if !(rimmy_camp_var_fortifyCustom2ArrayKey isEqualTo []) then {[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyCustom2] call ace_interact_menu_fnc_addActionToObject;};
-} forEach allMissionObjects _x;
+	{
+		[_x, 0, ["ACE_MainActions"], fortifyStorageSubmenu] call ace_interact_menu_fnc_addActionToObject;
+		[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], checkFortifyStorage] call ace_interact_menu_fnc_addActionToObject;
+		[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyDefault] call ace_interact_menu_fnc_addActionToObject;
+		if !(rimmy_camp_var_fortifyDesertArrayKey isEqualTo []) then {[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyDesert] call ace_interact_menu_fnc_addActionToObject;};
+		if !(rimmy_camp_var_fortifyWoodlandArrayKey isEqualTo []) then {[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyWoodland] call ace_interact_menu_fnc_addActionToObject;};
+		if !(rimmy_camp_var_fortifyLargeArrayKey isEqualTo []) then {[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyLarge] call ace_interact_menu_fnc_addActionToObject;};
+		if !(rimmy_camp_var_fortifyCampArrayKey isEqualTo []) then {[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyCamp] call ace_interact_menu_fnc_addActionToObject;};
+		if !(rimmy_camp_var_fortifyCustom1ArrayKey isEqualTo []) then {[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyCustom1] call ace_interact_menu_fnc_addActionToObject;};
+		if !(rimmy_camp_var_fortifyCustom2ArrayKey isEqualTo []) then {[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyCustom2] call ace_interact_menu_fnc_addActionToObject;};
+	} forEach allMissionObjects _x;
 } forEach rimmy_camp_var_fortifyVehicleSmall;
 
 {
-{
-	[_x, 0, ["ACE_MainActions"], fortifyStorageSubmenu] call ace_interact_menu_fnc_addActionToObject;
-	[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], checkFortifyStorage] call ace_interact_menu_fnc_addActionToObject;
-	[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyDesert] call ace_interact_menu_fnc_addActionToObject;
-	if !(rimmy_camp_var_fortifyWoodlandArrayKey isEqualTo []) then {[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyWoodland] call ace_interact_menu_fnc_addActionToObject;};
-	if !(rimmy_camp_var_fortifyLargeArrayKey isEqualTo []) then {[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyLarge] call ace_interact_menu_fnc_addActionToObject;};
-	if !(rimmy_camp_var_fortifyCampArrayKey isEqualTo []) then {[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyCamp] call ace_interact_menu_fnc_addActionToObject;};
-	if !(rimmy_camp_var_fortifyCustom1ArrayKey isEqualTo []) then {[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyCustom1] call ace_interact_menu_fnc_addActionToObject;};
-	if !(rimmy_camp_var_fortifyCustom2ArrayKey isEqualTo []) then {[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyCustom2] call ace_interact_menu_fnc_addActionToObject;};
-} forEach allMissionObjects _x;
+	{
+		[_x, 0, ["ACE_MainActions"], fortifyStorageSubmenu] call ace_interact_menu_fnc_addActionToObject;
+		[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], checkFortifyStorage] call ace_interact_menu_fnc_addActionToObject;
+		[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyDefault] call ace_interact_menu_fnc_addActionToObject;
+		if !(rimmy_camp_var_fortifyDesertArrayKey isEqualTo []) then {[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyDesert] call ace_interact_menu_fnc_addActionToObject;};
+		if !(rimmy_camp_var_fortifyWoodlandArrayKey isEqualTo []) then {[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyWoodland] call ace_interact_menu_fnc_addActionToObject;};
+		if !(rimmy_camp_var_fortifyLargeArrayKey isEqualTo []) then {[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyLarge] call ace_interact_menu_fnc_addActionToObject;};
+		if !(rimmy_camp_var_fortifyCampArrayKey isEqualTo []) then {[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyCamp] call ace_interact_menu_fnc_addActionToObject;};
+		if !(rimmy_camp_var_fortifyCustom1ArrayKey isEqualTo []) then {[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyCustom1] call ace_interact_menu_fnc_addActionToObject;};
+		if !(rimmy_camp_var_fortifyCustom2ArrayKey isEqualTo []) then {[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyCustom2] call ace_interact_menu_fnc_addActionToObject;};
+	} forEach allMissionObjects _x;
 } forEach rimmy_camp_var_fortifyObjectBig;
 
 {
-{
-	[_x, 0, ["ACE_MainActions"], fortifyStorageSubmenu] call ace_interact_menu_fnc_addActionToObject;
-	[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], checkFortifyStorage] call ace_interact_menu_fnc_addActionToObject;
-	[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyDesert] call ace_interact_menu_fnc_addActionToObject;
-	if !(rimmy_camp_var_fortifyWoodlandArrayKey isEqualTo []) then {[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyWoodland] call ace_interact_menu_fnc_addActionToObject;};
-	if !(rimmy_camp_var_fortifyLargeArrayKey isEqualTo []) then {[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyLarge] call ace_interact_menu_fnc_addActionToObject;};
-	if !(rimmy_camp_var_fortifyCampArrayKey isEqualTo []) then {[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyCamp] call ace_interact_menu_fnc_addActionToObject;};
-	if !(rimmy_camp_var_fortifyCustom1ArrayKey isEqualTo []) then {[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyCustom1] call ace_interact_menu_fnc_addActionToObject;};
-	if !(rimmy_camp_var_fortifyCustom2ArrayKey isEqualTo []) then {[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyCustom2] call ace_interact_menu_fnc_addActionToObject;};
-} forEach allMissionObjects _x;
+	{
+		[_x, 0, ["ACE_MainActions"], fortifyStorageSubmenu] call ace_interact_menu_fnc_addActionToObject;
+		[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], checkFortifyStorage] call ace_interact_menu_fnc_addActionToObject;
+		[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyDefault] call ace_interact_menu_fnc_addActionToObject;
+		if !(rimmy_camp_var_fortifyDesertArrayKey isEqualTo []) then {[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyDesert] call ace_interact_menu_fnc_addActionToObject;};
+		if !(rimmy_camp_var_fortifyWoodlandArrayKey isEqualTo []) then {[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyWoodland] call ace_interact_menu_fnc_addActionToObject;};
+		if !(rimmy_camp_var_fortifyLargeArrayKey isEqualTo []) then {[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyLarge] call ace_interact_menu_fnc_addActionToObject;};
+		if !(rimmy_camp_var_fortifyCampArrayKey isEqualTo []) then {[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyCamp] call ace_interact_menu_fnc_addActionToObject;};
+		if !(rimmy_camp_var_fortifyCustom1ArrayKey isEqualTo []) then {[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyCustom1] call ace_interact_menu_fnc_addActionToObject;};
+		if !(rimmy_camp_var_fortifyCustom2ArrayKey isEqualTo []) then {[_x, 0, ["ACE_MainActions", "fortifyStorageSubmenu"], changeFortifyCustom2] call ace_interact_menu_fnc_addActionToObject;};
+	} forEach allMissionObjects _x;
 } forEach rimmy_camp_var_fortifyObjectSmall;
 
 if (rimmy_camp_var_missionObjectAllow) then {

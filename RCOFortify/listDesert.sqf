@@ -1,4 +1,5 @@
-[rimmy_camp_var_fortifySide, -1, rimmy_camp_var_fortifyDesertArray] call acex_fortify_fnc_registerObjects;
+private _playerSidePicked = side player;
 
-currentFortifyList = "Desert";
-publicVariable "currentFortifyList";
+[_playerSidePicked, -1, rimmy_camp_var_fortifyDesertArray] call acex_fortify_fnc_registerObjects;
+
+missionNamespace setVariable [format ["rimmy_camp_var_fortifyListUpdate_%1", (str _playerSidePicked)],"Desert",true];

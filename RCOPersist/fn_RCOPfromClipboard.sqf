@@ -38,9 +38,7 @@ profileNamespace setVariable ["rimmy_camp_var_slotMedical", _slotMedicalHashmap]
 
 private _slotHungerKeys = [];
 private _slotHungerValues = [];
-// TESTER FOR LATER
-// private = _slotHungerIterate = [];
-// if ((_clipboardSave select 17) isEqualTo []) then {_slotHungerIterate = [[],[]]};
+
 {
 _slotHungerKeys pushBack (_x select 0);
 _slotHungerValues pushBack (_x select 1);
@@ -63,3 +61,4 @@ private _slotMarkersHashmap =  _slotMarkersKeys createHashMapFromArray _slotMark
 profileNamespace setVariable ["rimmy_camp_var_slotMarkers", _slotMarkersHashmap];
 profileNamespace setVariable ["rimmy_camp_var_recDAMMinefieldLocation", _clipboardSave select 22];
 profileNamespace setVariable ["rimmy_camp_var_recMineListToDelete", _clipboardSave select 23];
+profileNamespace setVariable ["rimmy_camp_var_permittedFOBObjects", _clipboardSave select 24];

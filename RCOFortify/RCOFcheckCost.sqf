@@ -6,6 +6,12 @@ scopeName "final";
 
 while {true} do {
 
+if (_object in rimmy_camp_var_fortifyDefaultArrayKey) then {
+_selector = rimmy_camp_var_fortifyDefaultArrayKey find _object;
+_finalCost = rimmy_camp_var_fortifyDefaultArrayValue select _selector;
+breakTo "final";
+};
+
 if (_object in rimmy_camp_var_fortifyDesertArrayKey) then {
 _selector = rimmy_camp_var_fortifyDesertArrayKey find _object;
 _finalCost = rimmy_camp_var_fortifyDesertArrayValue select _selector;
