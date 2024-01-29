@@ -1,5 +1,7 @@
 params ["_playerLoadoutChoice","_medicalLoadChoice","_hungerLoadChoice","_markerLoadChoice","_rimmySlotLoadout","_rimmySlotMedical","_rimmySlotHunger","_rimmySlotMarkers"];
 
+sleep (1 + random 5);
+
 if (_playerLoadoutChoice == 1) then {
 _loadout = [];
 _loadout = profileNamespace getVariable "rimmy_camp_var_playerLoadout";
@@ -52,11 +54,17 @@ player setVariable ["acex_field_rations_hunger", _recVarHunger];
 };
 };
 
-_radioFixer = ((_loadout select 9) select 2);
+sleep 3;
+
+_radioFixer = ((_loadout select 9) select 2); // CHANGES
 if (_radioFixer != "") then {
-_radioClass = [ configFile >> "CfgWeapons" >> _radioFixer, true ] call BIS_fnc_returnParents;
-_radioFixed = _radioClass select 1;
-player linkItem _radioFixed;
+	sleep (1 + random 5);
+	_radioClass = [ configFile >> "CfgWeapons" >> _radioFixer, true ] call BIS_fnc_returnParents;
+	_radioFixed = _radioClass select 1;
+	if ( (_radioFixed find ["_1", 5]) != -1 ) then {
+		_radioFixed = _radioClass select 2;
+	};
+	player linkItem _radioFixed;
 };
 
 if (_markerLoadChoice == 1) then {

@@ -267,24 +267,34 @@ if (isServer) then {
 
 	publicVariable "FOBMarkerGlobal";
 	publicVariable "finalPassGlobal";
+	sleep 1;
 	publicVariable "FOBAnchorLocGlobal";
 	publicVariable "finalMinePassGlobal";
+	sleep 1; // changes
 	publicVariable "DAMminefieldMarkerPassGlobal";
 	publicVariable "recGroupLeaderSideGlobal";
+	sleep 1;
 	publicVariable "recGroupLocationGlobal";
 	publicVariable "recGroupVehicleGlobal";
+	sleep 1;
 	publicVariable "recGroupLeaderTypeGlobal";
 	publicVariable "recGroupCallsignGlobal";
+	sleep 1;
 	publicVariable "recGroupNumbersGlobal";
 	publicVariable "finalCrateCargoGlobal";
+	sleep 1;
 	publicVariable "finalCratePassGlobal";
 	publicVariable "finalCrateBudgetGlobal";
+	sleep 1;
 	publicVariable "finalCrateStatsGlobal";
 	publicVariable "fobDeleteBlockerGlobal";
+	sleep 1;
 	publicVariable "recSavedSlotLoadout";
 	publicVariable "recSavedSlotHunger";
+	sleep 1;
 	publicVariable "recSavedSlotMedical";
 	publicVariable "recSavedSlotMarkers";
+	sleep 1;
 	publicVariable "mineListToDelete";
 	publicVariable "rimmy_camp_var_permittedFOBObjects";
 
@@ -301,22 +311,27 @@ profileNamespace setVariable ["rimmy_camp_var_FOBMarkerForDelete", FOBMarkerGlob
 profileNamespace setVariable ["rimmy_camp_var_recBuilding", finalPassGlobal];
 profileNamespace setVariable ["rimmy_camp_var_recFOBAnchorLoc", FOBAnchorLocGlobal];
 profileNamespace setVariable ["rimmy_camp_var_recMine", finalMinePassGlobal];
+sleep 1; // changes
 profileNamespace setVariable ["rimmy_camp_var_recDAMMinefieldLocation", DAMminefieldMarkerPassGlobal];
 profileNamespace setVariable ["rimmy_camp_var_recGroupLeaderSide", recGroupLeaderSideGlobal];
 profileNamespace setVariable ["rimmy_camp_var_recGroupLocation", recGroupLocationGlobal];
 profileNamespace setVariable ["rimmy_camp_var_recGroupVehicle", recGroupVehicleGlobal];
+sleep 1;
 profileNamespace setVariable ["rimmy_camp_var_recGroupLeaderType", recGroupLeaderTypeGlobal];
 profileNamespace setVariable ["rimmy_camp_var_recGroupCallsign", recGroupCallsignGlobal];
 profileNamespace setVariable ["rimmy_camp_var_recGroupNumbers", recGroupNumbersGlobal];
 profileNamespace setVariable ["rimmy_camp_var_recCrateCargo", finalCrateCargoGlobal]; 
+sleep 1;
 profileNamespace setVariable ["rimmy_camp_var_recCrateLocation", finalCratePassGlobal]; 
 profileNamespace setVariable ["rimmy_camp_var_recCrateBudget", finalCrateBudgetGlobal]; 
 profileNamespace setVariable ["rimmy_camp_var_recCrateStats", finalCrateStatsGlobal]; 
 profileNamespace setVariable ["rimmy_camp_var_recFOBDeleteBlocker", fobDeleteBlockerGlobal]; 
+sleep 1;
 profileNamespace setVariable ["rimmy_camp_var_slotLoadout", recSavedSlotLoadout];
 profileNamespace setVariable ["rimmy_camp_var_slotHunger", recSavedSlotHunger]; 
 profileNamespace setVariable ["rimmy_camp_var_slotMedical", recSavedSlotMedical]; 
 profileNamespace setVariable ["rimmy_camp_var_slotMarkers", recSavedSlotMarkers]; 
+sleep 1;
 profileNamespace setVariable ["rimmy_camp_var_recMineListToDelete", mineListToDelete];
 profileNamespace setVariable ["rimmy_camp_var_permittedFOBObjects", rimmy_camp_var_permittedFOBObjects];
 

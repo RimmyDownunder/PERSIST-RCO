@@ -9,7 +9,6 @@ _hungerLoadChoice = _module getVariable "RCOP_LoadHunger";
 _markerLoadChoice = _module getVariable "RCOP_LoadMarker";
 _JIPChoice = _module getVariable "RCOP_JIPLoadout";
 
-
 sleep 1;
 
 if (isNil "_playerLoadoutChoice") then {_playerLoadoutChoicePass = 0;} else {_playerLoadoutChoicePass = _playerLoadoutChoice;};
@@ -18,7 +17,7 @@ if (_hungerLoadChoice) then {_hungerLoadChoicePass = 1;} else {_hungerLoadChoice
 if (_markerLoadChoice) then {_markerLoadChoicePass = 1;} else {_markerLoadChoicePass = 0;};
 if (_JIPChoice) then {_JIPChoice = true;} else {_JIPChoice = false;};
 
-sleep 5;
+sleep 3;
 
 "Starting PERSIST loading..." remoteExec ["hint",0];
 sleep 0.1;
